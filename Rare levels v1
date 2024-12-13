@@ -1,0 +1,50 @@
+magic fox 
+regular = 500,000+ if 600,000+ then notify
+gold = 1,500,000+ if 1,600,000+ then notify
+rainbow = 3,000,000+ if 3,100,000+ then notify
+darkmatter = 9,000,000+ if 10,000,000+ then notify
+agony
+regular = 2,800,000+ if 3,000,000+ then notify
+gold = 8,400,000+ if 9,000,000+ then notify
+rainbow = 16,800,000+ if 18,000,000+ then notify
+darkmatter = 50,400,000+ if 51,000,000+ then notify
+spike
+regular = 400,000+ if 500,000+ then notify
+gold = 1,200,000+ if 1,500,000+ then notify
+rainbow = 2,400,000+ if 3,000,000+ then notify
+darkmatter = 7,200,000+ if 10,000,000+ then notify
+aes cat
+regular = 375,000+ if 400,000+ then notify
+gold = 1,125,000+ if 1,500,000+ then notify
+rainbow = 2,250,000+ if 2,500,000+ then notify
+darkmatter = 6,750,000+ if 9,000,000+ then notify
+chimera
+reg = 900,000+ if 1,000,000+ then notify
+gold = 2,700,000+ if 3,000,000+ then notify
+rainbow = 5,400,000+ if 5,800,000 then notify
+darkmatter = 16,200,000+ if 18,000,000+ then notify
+hydra
+regular = 1,400,000+ if 2,000,000+ then notify
+gold = 4,200,000+ if 5,000,000+ then notify
+rainbow = 8,400,000+ if 9,000,000+ then notify
+darkmatter = 25,200,000+ if 26,000,000+ then notify
+dog
+regular = 400,000+ then notify
+gold = 100,000+ then notify
+rainbow = 100,000+ then notify
+darkmatter = 100,000+ then notify
+cat
+regular = 400,000+ then notify
+gold = 100,000+ then notify
+rainbow = 100,000+ then notify
+darkmatter = 100,000+ then notify
+Giant Penguin
+regular = 14,000,000+ if 14,000,000+ then notify
+gold = 42,000,000+ if 42,500,000+ then notify
+rainbow = 84,000,000+ if 84,000,000+ then notify
+darkmatter = 252,000,000+ if 252,100,000+ then notify
+Randolph
+regular = 9,000,000 if 10,000,000+ then notify
+gold = 27,000,000 if 28,000,000+ then notify
+rainbow = 54,000,000 if 55,000,000+ then notify
+darkmatter = 162,000,000 if 162,000,000+ then notify
