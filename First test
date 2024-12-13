@@ -1,0 +1,73 @@
+local Lib = {
+    [18003] = 'Magic Fox',
+    [18006] = 'Agony',
+    [18002] = 'Spike',
+    [18001] = 'Aesthetic Cat',
+    [18004] = 'Chimera',
+    [18005] = 'Hydra',
+    [1002] = 'Dog',
+    [1001] = 'Cat',
+    [79003] = 'Giant Penguin',
+    [78005] = 'Randolph',
+    [16011] = 'C0RE SH0CK',
+    [17002] = 'Dominus Cherry',
+    [17007] = 'Dominus Rainbow',
+    [66010] = 'Skeleton Ghost'
+}
+
+local function notify(message)
+    local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Pet Notification",
+        Text = message,
+        Duration = 5
+    })
+end
+
+local thresholds = {
+    ["Magic Fox"] = { regular = {500000, 600000}, gold = {1500000, 1600000}, rainbow = {3000000, 3100000}, darkmatter = {9000000, 10000000} },
+    ["Agony"] = { regular = {2800000, 3000000}, gold = {8400000, 9000000}, rainbow = {16800000, 18000000}, darkmatter = {50400000, 51000000} },
+    ["Spike"] = { regular = {400000, 500000}, gold = {1200000, 1500000}, rainbow = {2400000, 3000000}, darkmatter = {7200000, 10000000} },
+    ["Aesthetic Cat"] = { regular = {375000, 400000}, gold = {1125000, 1500000}, rainbow = {2250000, 2500000}, darkmatter = {6750000, 9000000} },
+    ["Chimera"] = { regular = {900000, 1000000}, gold = {2700000, 3000000}, rainbow = {5400000, 5800000}, darkmatter = {16200000, 18000000} },
+    ["Hydra"] = { regular = {1400000, 2000000}, gold = {4200000, 5000000}, rainbow = {8400000, 9000000}, darkmatter = {25200000, 26000000} },
+    ["Dog"] = { regular = {400000}, gold = {100000}, rainbow = {100000}, darkmatter = {100000} },
+    ["Cat"] = { regular = {400000}, gold = {100000}, rainbow = {100000}, darkmatter = {100000} },
+    ["Giant Penguin"] = { regular = {14000000, 14000000}, gold = {42000000, 42500000}, rainbow = {84000000, 84000000}, darkmatter = {252000000, 252100000} },
+    ["Randolph"] = { regular = {9000000, 10000000}, gold = {27000000, 28000000}, rainbow = {54000000, 55000000}, darkmatter = {162000000, 162000000} },
+    ["C0RE SH0CK"] = { rainbow = {800000, 1000000} },
+    ["Dominus Cherry"] = { glitch = true },
+    ["Dominus Rainbow"] = { glitch = true },
+    ["Skeleton Ghost"] = { rainbow = {6600000, 10000000} }
+}
+
+local function checkPets(playerPets)
+    for _, pet in pairs(playerPets) do
+        local petName = Lib[pet.n]
+        local petType = pet.dm and "darkmatter" or pet.rb and "rainbow" or pet.g and "gold" or "regular"
+
+        if petName and thresholds[petName] and thresholds[petName][petType] then
+            local petValue = pet.l
+            local minValue = thresholds[petName][petType][1]
+            local notifyValue = thresholds[petName][petType][2]
+
+            if petValue >= minValue then
+                notify(petName .. " (" .. petType .. ") exceeds " .. minValue .. ". Value: " .. petValue)
+            end
+
+            if notifyValue and petValue >= notifyValue then
+                notify(petName .. " (" .. petType .. ") exceeds notify threshold of " .. notifyValue .. "! Value: " .. petValue)
+            end
+        elseif petName and petType == "glitch" then
+            notify("Glitched " .. petName .. " detected!")
+        end
+    end
+end
+
+local examplePlayerPets = {
+    { n = 18003, dm = false, rb = true, g = false, l = 3200000 },
+    { n = 18006, dm = true, rb = false, g = false, l = 52000000 },
+    { n = 17002, dm = true, rb = true, g = false, l = 1 }
+}
+
+checkPets(examplePlayerPets)
