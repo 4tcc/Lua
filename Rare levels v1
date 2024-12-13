@@ -48,3 +48,11 @@ regular = 9,000,000 if 10,000,000+ then notify
 gold = 27,000,000 if 28,000,000+ then notify
 rainbow = 54,000,000 if 55,000,000+ then notify
 darkmatter = 162,000,000 if 162,000,000+ then notify
+C0RE SH0CK
+rainbow = 800,000+ if 1,000,000+ then notify
+dominus cherry
+if v.dm and v.rb 'glitch' notify
+dominus rainbow
+if v.dm and v.rb 'glitch' notify
+skeleton ghost
+rainbow = 6,600,000+ if 10,000,000+ then notify
