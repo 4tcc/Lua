@@ -1,74 +1,6 @@
 local dir = require(game.ReplicatedStorage['1 | Directory']).Pets
 
-local target_pets = {
-    ["magic fox"] = {
-        gold = {notify = 1600000},
-        rainbow = {notify = 3100000},
-        darkmatter = {notify = 10000000}
-    },
-    ["agony"] = {
-        gold = {notify = 9000000},
-        rainbow = {notify = 18000000},
-        darkmatter = {notify = 51000000}
-    },
-    ["spike"] = {
-        gold = {notify = 1500000},
-        rainbow = {notify = 3000000},
-        darkmatter = {notify = 10000000}
-    },
-    ["aes cat"] = {
-        gold = {notify = 1500000},
-        rainbow = {notify = 2500000},
-        darkmatter = {notify = 9000000}
-    },
-    ["chimera"] = {
-        gold = {notify = 3000000},
-        rainbow = {notify = 5800000},
-        darkmatter = {notify = 18000000}
-    },
-    ["hydra"] = {
-        gold = {notify = 5000000},
-        rainbow = {notify = 9000000},
-        darkmatter = {notify = 26000000}
-    },
-    ["dog"] = {
-        regular = {notify = 400000},
-        gold = {notify = 100000},
-        rainbow = {notify = 100000},
-        darkmatter = {notify = 100000}
-    },
-    ["cat"] = {
-        regular = {notify = 400000},
-        gold = {notify = 100000},
-        rainbow = {notify = 100000},
-        darkmatter = {notify = 100000}
-    },
-    ["giant penguin"] = {
-        gold = {notify = 42500000},
-        rainbow = {notify = 84000000},
-        darkmatter = {notify = 252100000}
-    },
-    ["randolph"] = {
-        regular = {notify = 10000000},
-        gold = {notify = 28000000},
-        rainbow = {notify = 55000000},
-        darkmatter = {notify = 162000000}
-    },
-    ["c0re sh0ck"] = {
-        rainbow = {notify = 1000000}
-    },
-    ["dominus cherry"] = {
-        glitched = {notify = true}
-    },
-    ["dominus rainbow"] = {
-        glitched = {notify = true}
-    },
-    ["skeleton ghost"] = {
-        rainbow = {notify = 10000000}
-    }
-}
-
-local function fn(number)
+local fn = function(number)
     local formatted = tostring(number)
     local k
     while true do
@@ -80,23 +12,13 @@ local function fn(number)
     return formatted
 end
 
-local function check_pet_level(pet_name, pet_level, pet_tier)
-    if target_pets[pet_name] and target_pets[pet_name][pet_tier] then
-        local threshold = target_pets[pet_name][pet_tier].notify
-        if threshold and pet_level >= threshold then
-            return true
-        end
-    end
-    return false
-end
-
 warn'----'
 
-for _, user in pairs(game.Players:GetChildren()) do
-    for i, v in pairs(workspace.__REMOTES.Core['Get Other Stats']:InvokeServer()[user.Name].Save.Pets) do
+for _, user in pairs(game.Players:GetChildren())do
+    for i,v in pairs(workspace.__REMOTES.Core['Get Other Stats']:InvokeServer()[user.Name].Save.Pets) do
         local multi = v.g and 3 or v.r and 6 or v.dm and 18 or 1
-        local h = v.dm and v.r and 'Glitched ' or v.dm and 'DM ' or v.r and 'Rainbow ' or v.g and 'Gold ' or 'Regular '
-        if check_pet_level(v.n, v.l, h:lower()) and v.n ~= "17009" then
+        local h = v.dm and v.r and'Glitched 'or v.dm and'DM 'or v.r and'Rainbow 'or v.g and'Gold 'or'Regular '
+        if v.l >= dir[v.n].Level[2]*multi + 100000 and v.n ~= "17009" then
             print(user.Name .. ' has a LVL ' .. fn(v.l) .. ' ' ..  h .. dir[v.n].DisplayName)
         end
     end
