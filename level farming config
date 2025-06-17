@@ -1,0 +1,103 @@
+--[[ Instructions
+btw before you read this the script was originally made by bvth on discord but i
+added a setting to remove the debris that lagged the localplayer
+and added a loop
+ok bye with your dearest fearthedestiny on discord
+stop script: [ _G.FARMING = false ]
+
+PET_ID - the ID of the Pet to be levelled up
+CLEANER_PET_ID - the ID of the Pet that breaks unused coins that build up and are bad for farming, use some high-power pet like a Dominus Huge
+
+# Best configuration for Pets leveled under 2,250,000 #
+---
+mineCoins = {"Christmas2 Small Coin"}
+mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
+---
+
+# Best configuration for Pets leveled above 2,250,000 #
+---
+CLEANER_PET_ID = 0
+mineCoins = {"Christmas3 Small Cane", "Christmas3 Cane"}
+mineUnusedCoins = {}
+---
+]]
+
+-- Settings :
+
+PET_ID = 57776465
+CLEANER_PET_ID = 89130456
+mineCoins = {"Christmas2 Small Coin"}
+mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
+AUTO_REJOIN = true
+REJOIN_INTERVAL = 300 -- in seconds (5 minutes)
+
+--// Don't change anything under
+
+function getLvl(ID)
+    local Stats = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
+    for _, pet in pairs(Stats.Save.Pets) do
+        if pet.id == ID then
+            local l = pet.l
+            if pet.h then
+                for _, h in pairs(Stats.Save.Hats) do
+                    if h.id == pet.h then
+                        l = l + h.l
+                        break
+                    end
+                end
+            end
+            return l
+        end
+    end
+end
+
+local CLEANER_PET_LVL = getLvl(CLEANER_PET_ID)
+local PET_LVL = getLvl(PET_ID)
+
+task.wait(0.52)
+_G.FARMING = true
+local lastMainPetCooldwn, lastBreakPetCooldwn = os.clock(), os.clock()
+
+-- Farming loop
+task.spawn(function()
+    repeat task.wait(0.13)
+        for _, v in pairs(workspace.__THINGS.Coins:GetChildren()) do
+            local cn = v:FindFirstChild("CoinName")
+            if cn then
+                if table.find(mineCoins, cn.Value) and os.clock() > lastMainPetCooldwn + 0.13 then
+                    workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, PET_LVL * 2 - 1, PET_ID)
+                    lastMainPetCooldwn = os.clock()
+                elseif table.find(mineUnusedCoins, cn.Value) and os.clock() > lastBreakPetCooldwn + 0.13 and CLEANER_PET_LVL then
+                    workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, CLEANER_PET_LVL * 2 - 1, CLEANER_PET_ID)
+                    lastBreakPetCooldwn = os.clock()
+                end
+            end
+        end
+        if math.random(1000) == 1 then
+            PET_LVL = getLvl(PET_ID)
+        end
+    until not _G.FARMING
+end)
+
+-- __DEBRIS cleaner loop
+task.spawn(function()
+    local debrisFolder = workspace:WaitForChild("__DEBRIS")
+    while _G.FARMING do
+        for _, item in ipairs(debrisFolder:GetChildren()) do
+            if item:IsA("Part") then
+                item:Destroy()
+            end
+        end
+        task.wait(1)
+    end
+end)
+
+-- Auto rejoin loop
+if AUTO_REJOIN then
+    task.spawn(function()
+        task.wait(REJOIN_INTERVAL)
+        if _G.FARMING then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+        end
+    end)
+end
