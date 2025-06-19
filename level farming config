@@ -1,8 +1,6 @@
 --[[ Instructions
-btw before you read this the script was originally made by bvth on discord but i
-added a setting to remove the debris that lagged the localplayer
-and added a loop
-ok bye with your dearest fearthedestiny on discord
+btw before you read anything this scrupt was originally made by bvth and updated by me fearthedestiny on dc
+i made it deoete the exp msgs in __DEBRIS and made it rejoin so less lag. ok bye
 stop script: [ _G.FARMING = false ]
 
 PET_ID - the ID of the Pet to be levelled up
@@ -25,13 +23,13 @@ mineUnusedCoins = {}
 -- Settings :
 
 PET_ID = 57776465
-CLEANER_PET_ID = 89130456
+CLEANER_PET_ID = 23848504
 mineCoins = {"Christmas2 Small Coin"}
 mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
 AUTO_REJOIN = true
 REJOIN_INTERVAL = 300 -- in seconds (5 minutes)
 
---// Don't change anything under
+--// Don't change anything under this line
 
 function getLvl(ID)
     local Stats = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
@@ -92,12 +90,14 @@ task.spawn(function()
     end
 end)
 
--- Auto rejoin loop
+-- Auto rejoin loop (works on private servers too)
 if AUTO_REJOIN then
     task.spawn(function()
         task.wait(REJOIN_INTERVAL)
         if _G.FARMING then
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+            local TeleportService = game:GetService("TeleportService")
+            local Players = game:GetService("Players")
+            TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
         end
     end)
 end
