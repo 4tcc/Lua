@@ -1,9 +1,10 @@
 --[[ Instructions
-btw before you read anything this scrupt was originally made by bvth and updated by me fearthedestiny on dc
-i made it deoete the exp msgs in __DEBRIS and made it rejoin so less lag. ok bye
+btw before you read anything this script was by bvth and updated by me fearthedestiny on dc
+i made it deoete the exp msgs in __DEBRIS and made it rejoin so less lag( rn fixed the rejoin) ok bye
+
 stop script: [ _G.FARMING = false ]
 
-PET_ID - the ID of the Pet to be levelled up
+PET_ID - the ID of the Pet to be levelled up  
 CLEANER_PET_ID - the ID of the Pet that breaks unused coins that build up and are bad for farming, use some high-power pet like a Dominus Huge
 
 # Best configuration for Pets leveled under 2,250,000 #
@@ -90,14 +91,17 @@ task.spawn(function()
     end
 end)
 
--- Auto rejoin loop (works on private servers too)
+-- Auto rejoin loop (VIP server friendly)
 if AUTO_REJOIN then
     task.spawn(function()
         task.wait(REJOIN_INTERVAL)
         if _G.FARMING then
             local TeleportService = game:GetService("TeleportService")
             local Players = game:GetService("Players")
-            TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+            local player = Players.LocalPlayer
+            local placeId = game.PlaceId
+            local jobId = game.JobId
+            TeleportService:TeleportToPlaceInstance(placeId, jobId, player)
         end
     end)
 end
