@@ -1,6 +1,6 @@
 --[[ Instructions
 btw before you read anything this script was by bvth and updated by me fearthedestiny on dc
-i made it deoete the exp msgs in __DEBRIS and made it rejoin so less lag( rn fixed the rejoin) ok bye
+i made it delete the exp msgs in __DEBRIS and made it rejoin so less lag( rn fixed the rejoin) ok bye
 
 stop script: [ _G.FARMING = false ]
 
@@ -91,17 +91,29 @@ task.spawn(function()
     end
 end)
 
--- Auto rejoin loop (VIP server friendly)
+-- Auto Rejoin (Infinite Yield Style)
 if AUTO_REJOIN then
     task.spawn(function()
-        task.wait(REJOIN_INTERVAL)
-        if _G.FARMING then
-            local TeleportService = game:GetService("TeleportService")
-            local Players = game:GetService("Players")
-            local player = Players.LocalPlayer
-            local placeId = game.PlaceId
-            local jobId = game.JobId
-            TeleportService:TeleportToPlaceInstance(placeId, jobId, player)
+        local Players = game:GetService("Players")
+        local TeleportService = game:GetService("TeleportService")
+        local player = Players.LocalPlayer
+
+        -- Wait until fully loaded
+        if not game:IsLoaded() then
+            game.Loaded:Wait()
+        end
+
+        -- Queue script on teleport (you MUST replace the link)
+        if queue_on_teleport then
+            queue_on_teleport('loadstring(game:HttpGet("https://github.com/4tcc/Lua/blob/main/level%20farming%20config"))()')
+        end
+
+        -- Wait and teleport
+        while _G.FARMING and player and player.Parent do
+            task.wait(REJOIN_INTERVAL)
+            pcall(function()
+                TeleportService:Teleport(game.PlaceId, player)
+            end)
         end
     end)
 end
