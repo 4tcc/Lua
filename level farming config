@@ -1,119 +1,91 @@
---[[ Instructions
-btw before you read anything this script was by bvth and updated by me fearthedestiny on dc
-i made it delete the exp msgs in __DEBRIS and made it rejoin so less lag( rn fixed the rejoin) ok bye
-
-stop script: [ _G.FARMING = false ]
-
-PET_ID - the ID of the Pet to be levelled up  
-CLEANER_PET_ID - the ID of the Pet that breaks unused coins that build up and are bad for farming, use some high-power pet like a Dominus Huge
-
-# Best configuration for Pets leveled under 2,250,000 #
----
-mineCoins = {"Christmas2 Small Coin"}
-mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
----
-
-# Best configuration for Pets leveled above 2,250,000 #
----
-CLEANER_PET_ID = 0
-mineCoins = {"Christmas3 Small Cane", "Christmas3 Cane"}
-mineUnusedCoins = {}
----
+--[[ 
+Script by bvth, updated by fearthedestiny 
+Rejoin fixed using clean UI-compatible rejoin logic 
 ]]
 
--- Settings :
+PET_ID = 37478150
+CLEANER_PET_ID = 34350722
 
-PET_ID = 57776465
-CLEANER_PET_ID = 23848504
 mineCoins = {"Christmas2 Small Coin"}
 mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
+
 AUTO_REJOIN = true
-REJOIN_INTERVAL = 300 -- in seconds (5 minutes)
+REJOIN_INTERVAL = 300 -- seconds
+_G.FARMING = true
 
---// Don't change anything under this line
+-- Pet levels
+local s = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
+local PET_LVL, CLEANER_LVL = 0, 0
 
-function getLvl(ID)
-    local Stats = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
-    for _, pet in pairs(Stats.Save.Pets) do
-        if pet.id == ID then
-            local l = pet.l
-            if pet.h then
-                for _, h in pairs(Stats.Save.Hats) do
-                    if h.id == pet.h then
-                        l = l + h.l
-                        break
-                    end
-                end
-            end
-            return l
-        end
+for _, p in pairs(s.Save.Pets) do
+    if p.id == PET_ID then PET_LVL = p.l or 0 end
+    if p.id == CLEANER_PET_ID then CLEANER_LVL = p.l or 0 end
+end
+
+for _, h in pairs(s.Save.Hats) do
+    for _, p in pairs(s.Save.Pets) do
+        if p.id == PET_ID and p.h == h.id then PET_LVL = PET_LVL + (h.l or 0) end
+        if p.id == CLEANER_PET_ID and p.h == h.id then CLEANER_LVL = CLEANER_LVL + (h.l or 0) end
     end
 end
 
-local CLEANER_PET_LVL = getLvl(CLEANER_PET_ID)
-local PET_LVL = getLvl(PET_ID)
-
-task.wait(0.52)
-_G.FARMING = true
-local lastMainPetCooldwn, lastBreakPetCooldwn = os.clock(), os.clock()
-
--- Farming loop
+-- farmin
+local lastMain, lastBreak = os.clock(), os.clock()
 task.spawn(function()
-    repeat task.wait(0.13)
+    while _G.FARMING do
         for _, v in pairs(workspace.__THINGS.Coins:GetChildren()) do
-            local cn = v:FindFirstChild("CoinName")
-            if cn then
-                if table.find(mineCoins, cn.Value) and os.clock() > lastMainPetCooldwn + 0.13 then
-                    workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, PET_LVL * 2 - 1, PET_ID)
-                    lastMainPetCooldwn = os.clock()
-                elseif table.find(mineUnusedCoins, cn.Value) and os.clock() > lastBreakPetCooldwn + 0.13 and CLEANER_PET_LVL then
-                    workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, CLEANER_PET_LVL * 2 - 1, CLEANER_PET_ID)
-                    lastBreakPetCooldwn = os.clock()
-                end
+            local c = v:FindFirstChild("CoinName")
+            if not c then continue end
+            local now = os.clock()
+            if table.find(mineCoins, c.Value) and now > lastMain + 0.13 then
+                workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, PET_LVL * 2 - 1, PET_ID)
+                lastMain = now
+            elseif table.find(mineUnusedCoins, c.Value) and now > lastBreak + 0.13 then
+                workspace.__REMOTES.Game.Coins:FireServer("Mine", v.Name, CLEANER_LVL * 2 - 1, CLEANER_PET_ID)
+                lastBreak = now
             end
         end
         if math.random(1000) == 1 then
-            PET_LVL = getLvl(PET_ID)
-        end
-    until not _G.FARMING
-end)
-
--- __DEBRIS cleaner loop
-task.spawn(function()
-    local debrisFolder = workspace:WaitForChild("__DEBRIS")
-    while _G.FARMING do
-        for _, item in ipairs(debrisFolder:GetChildren()) do
-            if item:IsA("Part") then
-                item:Destroy()
+            local s = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
+            for _, p in pairs(s.Save.Pets) do
+                if p.id == PET_ID then PET_LVL = p.l or 0 end
             end
         end
-        task.wait(1)
+        task.wait(0.1)
     end
 end)
 
--- Auto Rejoin (Infinite Yield Style)
+-- ts deletes that fucking exp billborad
+task.spawn(function()
+    while _G.FARMING do
+        for _, i in ipairs(workspace.__DEBRIS:GetChildren()) do
+            if i:IsA("Part") then i:Destroy() end
+        end
+        task.wait()
+    end
+end)
+
+-- Rejoin logic (Infinity Yield )
 if AUTO_REJOIN then
+    local ts = game:GetService("TeleportService")
+    local plr = game:GetService("Players").LocalPlayer
+
     task.spawn(function()
-        local Players = game:GetService("Players")
-        local TeleportService = game:GetService("TeleportService")
-        local player = Players.LocalPlayer
-
-        -- Wait until fully loaded
-        if not game:IsLoaded() then
-            game.Loaded:Wait()
-        end
-
-        -- Queue script on teleport (you MUST replace the link)
-        if queue_on_teleport then
-            queue_on_teleport('loadstring(game:HttpGet("https://github.com/4tcc/Lua/blob/main/level%20farming%20config"))()')
-        end
-
-        -- Wait and teleport
-        while _G.FARMING and player and player.Parent do
+        while _G.FARMING and plr and plr.Parent do
             task.wait(REJOIN_INTERVAL)
-            pcall(function()
-                TeleportService:Teleport(game.PlaceId, player)
-            end)
+            if #game.Players:GetPlayers() <= 1 then
+                plr:Kick("\nRejoining...")
+                task.wait(1)
+                ts:Teleport(game.PlaceId, plr)
+            else
+                local success, err = pcall(function()
+                    ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+                end)
+                if not success then
+                    warn("Teleport failed, fallback: " .. tostring(err))
+                    ts:Teleport(game.PlaceId, plr)
+                end
+            end
         end
     end)
 end
