@@ -61,7 +61,7 @@ task.spawn(function()
         for _, i in ipairs(workspace.__DEBRIS:GetChildren()) do
             if i:IsA("Part") then i:Destroy() end
         end
-        task.wait()
+        task.wait(0.05)
     end
 end)
 
