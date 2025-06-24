@@ -1,8 +1,4 @@
---[[ 
-Script by bvth, updated by fearthedestiny 
-Rejoin fixed using clean UI-compatible rejoin logic 
-]]
-
+-- this script was originally made by bvth aka lowtiergear and updated by me fearthedestiny
 PET_ID = 37478150
 CLEANER_PET_ID = 34350722
 
@@ -10,10 +6,9 @@ mineCoins = {"Christmas2 Small Coin"}
 mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
 
 AUTO_REJOIN = true
-REJOIN_INTERVAL = 300 -- seconds
+REJOIN_INTERVAL = 300
 _G.FARMING = true
 
--- Pet levels
 local s = workspace.__REMOTES.Core["Get Stats"]:InvokeServer()
 local PET_LVL, CLEANER_LVL = 0, 0
 
@@ -24,12 +19,11 @@ end
 
 for _, h in pairs(s.Save.Hats) do
     for _, p in pairs(s.Save.Pets) do
-        if p.id == PET_ID and p.h == h.id then PET_LVL = PET_LVL + (h.l or 0) end
-        if p.id == CLEANER_PET_ID and p.h == h.id then CLEANER_LVL = CLEANER_LVL + (h.l or 0) end
+        if p.id == PET_ID and p.h == h.id then PET_LVL += h.l or 0 end
+        if p.id == CLEANER_PET_ID and p.h == h.id then CLEANER_LVL += h.l or 0 end
     end
 end
 
--- farmin
 local lastMain, lastBreak = os.clock(), os.clock()
 task.spawn(function()
     while _G.FARMING do
@@ -55,21 +49,27 @@ task.spawn(function()
     end
 end)
 
--- ts deletes that fucking exp billborad
+for _, i in ipairs(workspace.__DEBRIS:GetChildren()) do
+    if i:IsA("Part") then i:Destroy() end
+end
+
+workspace.__DEBRIS.ChildAdded:Connect(function(child)
+    if child:IsA("Part") then child:Destroy() end
+end)
+
 task.spawn(function()
     while _G.FARMING do
-        for _, i in ipairs(workspace.__DEBRIS:GetChildren()) do
-            if i:IsA("Part") then i:Destroy() end
+        local events = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+        if events and events:FindFirstChild("Events") then
+            events.Events:ClearAllChildren()
         end
-        task.wait(0.05)
+        task.wait(0.5)
     end
 end)
 
--- Rejoin logic (Infinity Yield )
 if AUTO_REJOIN then
     local ts = game:GetService("TeleportService")
     local plr = game:GetService("Players").LocalPlayer
-
     task.spawn(function()
         while _G.FARMING and plr and plr.Parent do
             task.wait(REJOIN_INTERVAL)
@@ -82,7 +82,6 @@ if AUTO_REJOIN then
                     ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
                 end)
                 if not success then
-                    warn("Teleport failed, fallback: " .. tostring(err))
                     ts:Teleport(game.PlaceId, plr)
                 end
             end
