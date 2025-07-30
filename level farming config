@@ -1,4 +1,25 @@
 -- this script was originally made by bvth aka lowtiergear and updated by me fearthedestiny
+--[[ Instructions
+
+stop script: [ _G.FARMING = false ]
+
+PET_ID - the ID of the Pet to be levelled up
+CLEANER_PET_ID - the ID of the Pet that breaks unused coins that build up and are bad for farming, use some high-power pet like a Dominus Huge
+
+# Best configuration for Pets leveled under 2,250,000 #
+---
+mineCoins = {"Christmas2 Small Coin"}
+mineUnusedCoins = {"Christmas2 Coin", "Christmas2 Coin Stack", "Christmas2 Small Chest", "Christmas2 Chest"}
+---
+
+# Best configuration for Pets leveled above 2,250,000 #
+---
+CLEANER_PET_ID = 0
+mineCoins = {"Christmas3 Small Cane", "Christmas3 Cane"}
+mineUnusedCoins = {}
+---
+]]
+
 PET_ID = 37478150
 CLEANER_PET_ID = 34350722
 
